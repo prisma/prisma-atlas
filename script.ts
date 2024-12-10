@@ -7,7 +7,7 @@ async function main() {
  
   const publishedPosts = await prisma.post.findMany({
     where: { published: true }
-  }
+  })
   console.log(publishedPosts)
 
 }
