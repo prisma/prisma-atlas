@@ -1,5 +1,4 @@
 // atlas.hcl
-
 data "external_schema" "prisma" {
     program = [ 
       "npx",
@@ -12,14 +11,23 @@ data "external_schema" "prisma" {
       "--script"
     ]
 }
-
 env "local" {
-  dev = "docker://postgres/16/dev?search_path=public"
+  // dev = "postgresql://nikolasburk:nikolasburk@localhost:5432/atlas-prisma?sslmode=disable"
+  dev = "docker://postgres/13/dev?search_path=public"
   schema {
-    src = data.external_schema.prisma.url
+    src = data.composite_schema.prisma-extended.url
   }
   migration {
     dir = "file://atlas/migrations"
-    exclude = [ "_prisma_migrations" ]
+    exclude = ["_prisma_migrations"]
+  }
+}
+
+data "composite_schema" "prisma-extended" {
+  schema "public" {
+    url = data.external_schema.prisma.url
+  }
+  schema "public" {
+    url = "file://atlas/published_posts_index.sql"
   }
 }
